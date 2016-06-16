@@ -1,0 +1,45 @@
+<dialog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="WatsonDialogDocument_1.0.xsd">
+    <flow>
+      <folder label="Main">
+          <output>
+              <prompt selectionType="RANDOM">
+                  <item>Hello, welcome to Mike's Pizza</item>
+              </prompt>
+              <goto ref="getUserInput_2449614"/>
+          </output>
+          <getUserInput id="getUserInput_2449614">
+              <search ref="folder_2449611"/>
+              <default>
+                  <output>
+                      <prompt selectionType="RANDOM">
+                          <item>
+                              I am sorry, I did not understand your question. Please try asking another one.
+                          </item>
+                      </prompt>
+                  </output>
+              </default>
+          </getUserInput>
+      </folder>
+      <folder label="Library">
+          <folder label="Live Content" id="folder_2449611">
+              <input>
+                  <grammar>
+                      <item>What type of toppings do you have?</item>
+                      <item>$ What type of toppings do you have?</item>
+                      <item>$ list of toppings</item>
+                      <item>What * toppings * have</item>
+                      <item>$ list toppings * available</item>
+                      <item>$ what toppings do you have</item>
+                  </grammar>
+                  <output>
+                      <prompt selectionType="RANDOM">
+                          <item>We have Pepperoni, Mushrooms, and Sausage</item>
+                      </prompt>
+                  </output>
+              </input>
+          </folder>
+          <folder label="Storage"/>
+      </folder>
+        <folder label="Concepts" id="Concepts"></folder>
+    </flow>
+</dialog>

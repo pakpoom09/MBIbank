@@ -33,7 +33,7 @@ LICENSE file in the root directory of this source tree.
     <h1>Messenger Demo</h1>
 
     <div>
-      <p>The "Send to Messenger" plugin will trigger an authentication callback to your webhook.</p>
+      <p>INDEX:0 The "Send to Messenger" plugin will trigger an authentication callback to your webhook.</p>
 
       <div class="fb-send-to-messenger"
         messenger_app_id='APP_ID'
@@ -64,7 +64,7 @@ LICENSE file in the root directory of this source tree.
     <p>Output:</p>
   <div id="output">
 
-                
+
   </div>
 
 

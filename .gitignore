@@ -28,14 +28,3 @@ node_modules
 
 # Users Environment Variables
 .lock-wscript
-
-# Eclipse project settings
-.settings
-
-# Eclipse project settings
-.settings
-.project
-
-# Misc files
-.cfignore
-.jshintrc

@@ -1,16 +1,18 @@
 {
-	"name": "NodejsStarterApp",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"start": "node app.js"
-	},
-	"dependencies": {
-		"express": "4.13.x",
-		"cfenv": "1.0.x"
-	},
-	"repository": {},
-	"engines": {
-		"node": "4.x"
-	} 
+  "name": "MBIbank-messenger",
+  "description": "Demo app to redirect http requests to https",
+  "version": "0.0.1",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "cfenv": "1.0.3",
+    "config": "^1.21.0",
+    "crypto": "0.0.3",
+    "express": "4.x",
+    "fs": "0.0.2",
+    "https": "^1.0.0",
+    "request": "^2.72.0",
+    "watson-developer-cloud": "^1.9.3"
+  },
+  "author": "Tony Erwin",
+  "license": "Apache License, Version 2.0"
 }
