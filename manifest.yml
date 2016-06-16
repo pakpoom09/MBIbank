@@ -1,0 +1,10 @@
+applications:
+- path: .
+  memory: 1024M
+  instances: 1
+  domain: touchaposgibmcom-dev.apic.mybluemix.net
+  name: MBIbank
+  host: mbibank
+  disk_quota: 1024M
+  services:
+  - Dialog-MBIbank
