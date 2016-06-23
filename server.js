@@ -125,6 +125,7 @@ dialog_service.updateDialog(params, function(err, dialog) {
   else
     console.log(dialog);
 });
+res.send('updated!');
 });
 /*
  * Use your own validation token. Check that the token used in the Webhook
