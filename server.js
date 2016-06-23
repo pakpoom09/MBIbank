@@ -294,11 +294,8 @@ function receivedMessage(event) {
   var messageId = message.mid;
 
   // You may get a text or attachment but not both
-  var messageText = message.text;
+  var messageText = message.text.toLowerCase();
   var messageAttachments = message.attachments;
-
-
-console.log("Converstation Start");
 //Watson dialog
 //client_id: '', conversation_id: '', classifier: ''
 var params = {
@@ -334,17 +331,17 @@ dialog_service.conversation(params, function(err, conversation) {
       // keywords and send back the corresponding example. Otherwise, just echo
       // the text we received.
 
-        if(messageText.substring(0,5) == 'image')
-          sendImageMessage(senderID,messageText);
+        if(json_message.response[0].substring(0,5) == 'image')
+          sendImageMessage(senderID,json_message.response[0]);
 
-        else if(messageText.substring(0,6) == 'button')
-          sendButtonMessage(senderID,messageText);
+        else if(json_message.response[0].substring(0,6) == 'button')
+          sendButtonMessage(senderID,json_message.response[0]);
 
-        else if(messageText.substring(0,7) == 'generic')
-          sendGenericMessage(senderID,messageText);
+        else if(json_message.response[0].substring(0,7) == 'generic')
+          sendGenericMessage(senderID,json_message.response[0]);
 
-        else if(messageText.substring(0,7) == 'receipt')
-          sendReceiptMessage(senderID,messageText);
+        else if(json_message.response[0].substring(0,7) == 'receipt')
+          sendReceiptMessage(senderID,json_message.response[0]);
 
         else if(messageText.substring(0,4) == 'help')
           sendTextMessage(senderID,messageText);
@@ -352,7 +349,7 @@ dialog_service.conversation(params, function(err, conversation) {
         else if (messageText == 'ภาคภูมิ')
           sendTextMessage(senderID,"เป็นคนที่ใจหล่อมากครับ นับถือๆ เรียนอยู่มหิดลปี3 สนใจ inboxมาครับ");
         else
-          sendTextMessage(senderID,clients[senderID].client_id+" : "+json_message.response[0]);
+          sendTextMessage(senderID,json_message.response[0]);
 
     }else if (messageAttachments) {
       sendTextMessage(senderID, "Message with attachment received");
@@ -410,9 +407,60 @@ function receivedPostback(event) {
   console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
+
+  var client_id = clients[senderID].client_id;
   // When a postback is called, we'll send a message back to the sender to
   // let them know it was successful
-  sendTextMessage(senderID, "Postback called");
+
+  var params = {
+      conversation_id: clients[senderID].conversation_id,
+      dialog_id: 'ebeb09eb-9523-47e2-981e-b64ad82334d1',
+      client_id: clients[senderID].client_id,
+      input:     payload.toLowerCase()
+    };
+
+  dialog_service.conversation(params, function(err, conversation) {
+    if (err)
+    {
+      console.log("output error:"+err);
+      console.log(JSON.stringify(err));
+    }
+    else
+    {
+      console.log(JSON.stringify(conversation));
+      json_message = conversation;
+
+      if(clients[senderID].client_id == '')
+      {
+          clients[senderID].client_id = conversation.client_id;
+          clients[senderID].conversation_id = conversation.conversation_id;
+      }
+
+      console.log("Post_RESPONSE:"+json_message.response[0]);
+
+
+  if(json_message.response[0].substring(0,5) == 'image')
+    sendImageMessage(senderID,json_message.response[0]);
+
+  else if(json_message.response[0].substring(0,6) == 'button')
+    sendButtonMessage(senderID,json_message.response[0]);
+
+  else if(json_message.response[0].substring(0,7) == 'generic')
+    sendGenericMessage(senderID,json_message.response[0]);
+
+  else if(json_message.response[0].substring(0,7) == 'receipt')
+    sendReceiptMessage(senderID,json_message.response[0]);
+
+  else if(payload.substring(0,4) == 'help')
+    sendTextMessage(senderID,messageText);
+
+  else if (payload == 'ภาคภูมิ')
+    sendTextMessage(senderID,"เป็นคนที่ใจหล่อมากครับ นับถือๆ เรียนอยู่มหิดลปี3 สนใจ inboxมาครับ");
+  else
+    sendTextMessage(senderID,json_message.response[0]);
+}
+});
+
 }
 
 
@@ -448,7 +496,7 @@ function sendTextMessage(recipientId,message) {
       id: recipientId
     },
     message: {
-      text: messageText
+      text: message
     }
   };
 
@@ -505,32 +553,32 @@ function sendGenericMessage(recipientId,message) {
         payload: {
           template_type: "generic",
           elements: [{
-            title: "rift",
-            subtitle: "Next-generation virtual reality",
-            item_url: "https://www.oculus.com/en-us/rift/",
-            image_url: "http://messengerdemo.parseapp.com/img/rift.png",
+            title: "Dad",
+            subtitle: "084-xxx-xxxx",
+            item_url: "https://www.facebook.com/napon.meka?fref=ts",
+            image_url: "https://scontent.fbkk1-1.fna.fbcdn.net/v/t1.0-9/1521536_618191658217784_959036561_n.jpg?oh=893374610ec88dce0f472164439be16f&oe=57F0B2E6",
             buttons: [{
               type: "web_url",
-              url: "https://www.oculus.com/en-us/rift/",
-              title: "Open Web URL"
+              url: "https://www.facebook.com/napon.meka?fref=ts",
+              title: "Open Facebook"
             }, {
               type: "postback",
-              title: "Call Postback",
-              payload: "Payload for first bubble",
+              title: "Send money",
+              payload: "payload_sendmoney",
             }],
           }, {
-            title: "touch",
-            subtitle: "Your Hands, Now in VR",
-            item_url: "https://www.oculus.com/en-us/touch/",
-            image_url: "http://messengerdemo.parseapp.com/img/touch.png",
+            title: "Mom",
+            subtitle: "087-xxx-xxxx",
+            item_url: "https://www.facebook.com/ramkhana?fref=ts",
+            image_url: "https://scontent.fbkk1-1.fna.fbcdn.net/v/t1.0-9/310015_10201311245843439_351152783_n.jpg?oh=fe3a424d8a4be9bdce443829dc878187&oe=57C51027",
             buttons: [{
               type: "web_url",
-              url: "https://www.oculus.com/en-us/touch/",
-              title: "Open Web URL"
+              url: "https://www.facebook.com/ramkhana?fref=ts",
+              title: "Open Facebook"
             }, {
               type: "postback",
-              title: "Call Postback",
-              payload: "Payload for second bubble",
+              title: "Send money",
+              payload: "payload_sendmoney2",
             }]
           }]
         }
