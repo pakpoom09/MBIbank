@@ -95,26 +95,37 @@ dialog_service.getDialogs({}, function(err, dialogs) {
 });
 });
 
+app.get('/setDialogs', function (req, res) {
+  var params = {
+    name: 'my-dialog100',
+    file: fs.createReadStream('Exercise_8_end.xml')
+  };
+
+  dialog_service.createDialog(params, function(err, dialog) {
+    if (err)
+      console.log(err)
+    else
+      console.log(dialog);
+  });
+
+});
+
+
 //create dialogs
 
-
-// Set conversation
-/*
-app.get('/setConversation', function (req, res) {
+app.get('/updateDialogs', function (req, res) {
 var params = {
-  conversation_id: '{conversation_id}',
-  dialog_id: '{dialog_id}',
-  client_id: '{client_id}',
-  input:     '{input}'
+  dialog_id: 'ebeb09eb-9523-47e2-981e-b64ad82334d1',
+  file: fs.createReadStream('template.xml')
 };
-dialog_service.conversation(params, function(err, conversation) {
+
+dialog_service.updateDialog(params, function(err, dialog) {
   if (err)
     console.log(err)
   else
-    console.log(conversation);
+    console.log(dialog);
 });
 });
-*/
 /*
  * Use your own validation token. Check that the token used in the Webhook
  * setup is the same token used here.
@@ -141,6 +152,9 @@ app.get('/webhook', function(req, res) {
  * https://developers.facebook.com/docs/messenger-platform/implementation#subscribe_app_pages
  *
  */
+
+ var clients ={};
+
 app.post('/webhook', function (req, res) {
 
   var data = req.body;
@@ -155,6 +169,14 @@ app.post('/webhook', function (req, res) {
 
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
+
+          //Client_id handle
+          if(!clients[messagingEvent.sender.id])
+          {
+             clients[messagingEvent.sender.id] = {client_id: '', conversation_id: '', classifier: ''};
+          }
+
+
         if (messagingEvent.optin) {
           receivedAuthentication(messagingEvent);
         } else if (messagingEvent.message) {
@@ -215,10 +237,12 @@ function verifyRequestSignature(req, res, buf) {
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference#auth
  *
  */
+
 function receivedAuthentication(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
   var timeOfAuth = event.timestamp;
+
 
   // The 'ref' field is set in the 'Send to Messenger' plugin, in the 'data-ref'
   // The developer can set this to an arbitrary value to associate the
@@ -233,6 +257,7 @@ function receivedAuthentication(event) {
 
   // When an authentication is received, we'll send a message back to the sender
   // to let them know it was successful.
+  console.log("UserID: "+senderID+" Authentication successful");
   sendTextMessage(senderID, "Authentication successful");
 }
 
@@ -251,6 +276,11 @@ function receivedAuthentication(event) {
  * then we'll simply confirm that we've received the attachment.
  *
  */
+
+ var json_message;
+ var cur_conversation_id;
+ var cur_client_id;
+
 function receivedMessage(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
@@ -268,66 +298,70 @@ function receivedMessage(event) {
   var messageAttachments = message.attachments;
 
 
-  //Dialogs watson
-  var params = {
-  conversation_id: '',
-  dialog_id: 'ebeb09eb-9523-47e2-981e-b64ad82334d1',
-  client_id: senderID,
-  input:     messageText
-};
-console.log('conversation_start');
+console.log("Converstation Start");
+//Watson dialog
+//client_id: '', conversation_id: '', classifier: ''
+var params = {
+    conversation_id: clients[senderID].conversation_id,
+    dialog_id: 'ebeb09eb-9523-47e2-981e-b64ad82334d1',
+    client_id: clients[senderID].client_id,
+    input:     messageText
+  };
+
+
 dialog_service.conversation(params, function(err, conversation) {
   if (err)
-    console.log("conversationnnnnn errorrrrrrrrrrrrrr"+err)
+  {
+    console.log("output error:"+err);
+    console.log(JSON.stringify(err));
+  }
   else
   {
-    console.log("conversationnnnnnnnnnnnnnnn: "conversation);
-    var dialog_result = conversation;
+    console.log(JSON.stringify(conversation));
+    json_message = conversation;
+
+    if(clients[senderID].client_id == '')
+    {
+        clients[senderID].client_id = conversation.client_id;
+        clients[senderID].conversation_id = conversation.conversation_id;
+    }
+
+    console.log("RESPONSE:"+json_message.response[0]);
+
+    if (messageText) {
+
+      // If we receive a text message, check to see if it matches any special
+      // keywords and send back the corresponding example. Otherwise, just echo
+      // the text we received.
+
+        if(messageText.substring(0,5) == 'image')
+          sendImageMessage(senderID,messageText);
+
+        else if(messageText.substring(0,6) == 'button')
+          sendButtonMessage(senderID,messageText);
+
+        else if(messageText.substring(0,7) == 'generic')
+          sendGenericMessage(senderID,messageText);
+
+        else if(messageText.substring(0,7) == 'receipt')
+          sendReceiptMessage(senderID,messageText);
+
+        else if(messageText.substring(0,4) == 'help')
+          sendTextMessage(senderID,messageText);
+
+        else if (messageText == 'ภาคภูมิ')
+          sendTextMessage(senderID,"เป็นคนที่ใจหล่อมากครับ นับถือๆ เรียนอยู่มหิดลปี3 สนใจ inboxมาครับ");
+        else
+          sendTextMessage(senderID,clients[senderID].client_id+" : "+json_message.response[0]);
+
+    }else if (messageAttachments) {
+      sendTextMessage(senderID, "Message with attachment received");
+    }
   }
 });
-//</Dialogs watson>
 
-  if (messageText) {
+//
 
-    // If we receive a text message, check to see if it matches any special
-    // keywords and send back the corresponding example. Otherwise, just echo
-    // the text we received.
-    switch (messageText) {
-      case 'image':
-        sendImageMessage(senderID);
-        break;
-
-      case 'button':
-        sendButtonMessage(senderID);
-        break;
-
-      case 'generic':
-        sendGenericMessage(senderID);
-        break;
-
-      case 'receipt':
-        sendReceiptMessage(senderID);
-        break;
-
-			case 'help':
-	    	sendTextMessage(senderID,"พิมพ์ image, button, generic, receipt, หรือ อื่นๆ");
-	      break;
-
-				case 'ช่วยด้วย':
-					sendTextMessage(senderID,"พิมพ์ image, button, generic, receipt, หรือ อื่นๆ");
-					break;
-
-				case 'ภาคภูมิ':
-		    	sendTextMessage(senderID,"เป็นคนที่ใจหล่อมากครับ นับถือๆ เรียนอยู่มหิดลปี3 สนใจ inboxมาครับ");
-		      break;
-
-
-      default:
-        sendTextMessage(senderID, senderID+": "+messageText);
-    }
-  } else if (messageAttachments) {
-    sendTextMessage(senderID, "Message with attachment received");
-  }
 }
 
 
@@ -386,7 +420,7 @@ function receivedPostback(event) {
  * Send a message with an using the Send API.
  *
  */
-function sendImageMessage(recipientId) {
+function sendImageMessage(recipientId,message) {
   var messageData = {
     recipient: {
       id: recipientId
@@ -408,7 +442,7 @@ function sendImageMessage(recipientId) {
  * Send a text message using the Send API.
  *
  */
-function sendTextMessage(recipientId, messageText) {
+function sendTextMessage(recipientId,message) {
   var messageData = {
     recipient: {
       id: recipientId
@@ -425,31 +459,34 @@ function sendTextMessage(recipientId, messageText) {
  * Send a button message using the Send API.
  *
  */
-function sendButtonMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "button",
-          text: "This is test text",
-          buttons:[{
-            type: "web_url",
-            url: "https://www.oculus.com/en-us/rift/",
-            title: "Open Web URL"
-          }, {
-            type: "postback",
-            title: "Call Postback",
-            payload: "Developer defined postback"
-          }]
-        }
-      }
-    }
-  };
+function sendButtonMessage(recipientId,message) {
 
+  if(message=="button")
+  {
+      var messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          attachment: {
+            type: "template",
+            payload: {
+              template_type: "button",
+              text: "This is test text",
+              buttons:[{
+                type: "web_url",
+                url: "https://www.oculus.com/en-us/rift/",
+                title: "Open Web URL"
+              }, {
+                type: "postback",
+                title: "Call Postback",
+                payload: "Developer defined postback"
+              }]
+            }
+          }
+        }
+      };
+}
   callSendAPI(messageData);
 }
 
@@ -457,7 +494,7 @@ function sendButtonMessage(recipientId) {
  * Send a Structured Message (Generic Message type) using the Send API.
  *
  */
-function sendGenericMessage(recipientId) {
+function sendGenericMessage(recipientId,message) {
   var messageData = {
     recipient: {
       id: recipientId
@@ -508,7 +545,7 @@ function sendGenericMessage(recipientId) {
  * Send a receipt message using the Send API.
  *
  */
-function sendReceiptMessage(recipientId) {
+function sendReceiptMessage(recipientId,message) {
   // Generate a random receipt ID as the API requires a unique ID
   var receiptId = "order" + Math.floor(Math.random()*1000);
 
