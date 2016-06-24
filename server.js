@@ -289,12 +289,12 @@ function receivedMessage(event) {
 
   console.log("Received message for user %d and page %d at %d with message:",
     senderID, recipientID, timeOfMessage);
-  console.log(JSON.stringify(message));
+
 
   var messageId = message.mid;
 
   // You may get a text or attachment but not both
-  var messageText = message.text.toLowerCase();
+  var messageText = message.text;
   var messageAttachments = message.attachments;
 //Watson dialog
 //client_id: '', conversation_id: '', classifier: ''
@@ -309,12 +309,10 @@ var params = {
 dialog_service.conversation(params, function(err, conversation) {
   if (err)
   {
-    console.log("output error:"+err);
     console.log(JSON.stringify(err));
   }
   else
   {
-    console.log(JSON.stringify(conversation));
     json_message = conversation;
 
     if(clients[senderID].client_id == '')
@@ -342,9 +340,6 @@ dialog_service.conversation(params, function(err, conversation) {
 
         else if(json_message.response[0].substring(0,7) == 'receipt')
           sendReceiptMessage(senderID,json_message.response[0]);
-
-        else if(messageText.substring(0,4) == 'help')
-          sendTextMessage(senderID,messageText);
 
         else if (messageText == 'ภาคภูมิ')
           sendTextMessage(senderID,"เป็นคนที่ใจหล่อมากครับ นับถือๆ เรียนอยู่มหิดลปี3 สนใจ inboxมาครับ");
@@ -416,13 +411,12 @@ function receivedPostback(event) {
       conversation_id: clients[senderID].conversation_id,
       dialog_id: 'ebeb09eb-9523-47e2-981e-b64ad82334d1',
       client_id: clients[senderID].client_id,
-      input:     payload.toLowerCase()
+      input:     payload
     };
 
   dialog_service.conversation(params, function(err, conversation) {
     if (err)
     {
-      console.log("output error:"+err);
       console.log(JSON.stringify(err));
     }
     else
@@ -450,9 +444,6 @@ function receivedPostback(event) {
 
   else if(json_message.response[0].substring(0,7) == 'receipt')
     sendReceiptMessage(senderID,json_message.response[0]);
-
-  else if(payload.substring(0,4) == 'help')
-    sendTextMessage(senderID,messageText);
 
   else if (payload == 'ภาคภูมิ')
     sendTextMessage(senderID,"เป็นคนที่ใจหล่อมากครับ นับถือๆ เรียนอยู่มหิดลปี3 สนใจ inboxมาครับ");
@@ -509,32 +500,68 @@ function sendTextMessage(recipientId,message) {
  */
 function sendButtonMessage(recipientId,message) {
 
-  if(message=="button")
-  {
-      var messageData = {
-        recipient: {
-          id: recipientId
-        },
-        message: {
-          attachment: {
-            type: "template",
-            payload: {
-              template_type: "button",
-              text: "This is test text",
-              buttons:[{
-                type: "web_url",
-                url: "https://www.oculus.com/en-us/rift/",
-                title: "Open Web URL"
-              }, {
-                type: "postback",
-                title: "Call Postback",
-                payload: "Developer defined postback"
-              }]
+     //button_question_[https://abc.com,buttonName][payloadName,buttonName]........
+/*
+     var messageData = {
+       recipient: {
+         id: recipientId
+       },
+       message: {
+         attachment: {
+           type: "template",
+           payload: {
+             template_type: "button",
+             text: "This is test text",
+             buttons:[{
+               type: "web_url",
+               url: "https://www.oculus.com/en-us/rift/",
+               title: "Open Web URL"
+             }, {
+               type: "postback",
+               title: "Call Postback",
+               payload: "Developer defined postback"
+             }]
+           }
+         }
+       }
+     };
+*/
+      var words = message.split("_");
+
+      var messageData;
+      if(words[0] == "button")
+      {
+          messageData = {
+          recipient: {
+            id: recipientId
+          },
+          message: {
+            attachment: {
+              type: "template",
+              payload: {
+                template_type: "button",
+                text: words[1],
+                buttons:[]
+              }
             }
           }
-        }
-      };
-}
+        };
+        console.log("Before MessageData:"+JSON.stringify(messageData));
+            var btns = words[2].split("|");
+            for(var x in btns)
+            {
+              var texts = btns[x].split(",");
+
+              if(texts[0].startsWith("http"))
+                messageData.message.attachment.payload.buttons[x] = {type: "web_url",url:texts[0],title:texts[1]};
+                else {
+                  messageData.message.attachment.payload.buttons[x] = {type: "postback",payload:texts[0],title:texts[1]};
+                }
+
+            }
+          console.log("MessageData:"+JSON.stringify(messageData));
+      }
+
   callSendAPI(messageData);
 }
 
@@ -543,7 +570,79 @@ function sendButtonMessage(recipientId,message) {
  *
  */
 function sendGenericMessage(recipientId,message) {
-  var messageData = {
+
+  var words = message.split("|");
+
+  var messageData;
+  if(words[1] == ("receipt"))
+  {
+  messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "generic",
+            elements: [{
+              title: words[3],
+              subtitle: words[4],
+              item_url: "",
+              image_url: words[2],
+              buttons: null
+            }]
+          }
+        }
+      }
+    };
+  }
+  else
+  {
+    messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          attachment: {
+            type: "template",
+            payload: {
+              template_type: "generic",
+              elements: [{
+                title: "Dad",
+                subtitle: "084-xxx-xxxx",
+                item_url: "https://www.facebook.com/napon.meka?fref=ts",
+                image_url: "https://scontent.fbkk1-1.fna.fbcdn.net/v/t1.0-9/1521536_618191658217784_959036561_n.jpg?oh=893374610ec88dce0f472164439be16f&oe=57F0B2E6",
+                buttons: [{
+                  type: "postback",
+                  title: "Send money",
+                  payload: "sendmoney_dad"
+                }, {
+                  type: "postback",
+                  title: "Request money",
+                  payload: "requestmoney_dad"
+                }],
+              }, {
+                title: "Mom",
+                subtitle: "087-xxx-xxxx",
+                item_url: "https://www.facebook.com/ramkhana?fref=ts",
+                image_url: "https://scontent.fbkk1-1.fna.fbcdn.net/v/t1.0-9/310015_10201311245843439_351152783_n.jpg?oh=fe3a424d8a4be9bdce443829dc878187&oe=57C51027",
+                buttons: [{
+                  type: "postback",
+                  title: "Send money",
+                  payload: "sendmoney_mom"
+                }, {
+                  type: "postback",
+                  title: "Request money",
+                  payload: "requestmoney_mom"
+                }]
+              }]
+            }
+          }
+        }
+      };
+  }
+/*  var messageData = {
     recipient: {
       id: recipientId
     },
@@ -564,7 +663,11 @@ function sendGenericMessage(recipientId,message) {
             }, {
               type: "postback",
               title: "Send money",
-              payload: "payload_sendmoney",
+              payload: "payload_sendmoney"
+            }, {
+              type: "postback",
+              title: "Send money2",
+              payload: "payload_sm2"
             }],
           }, {
             title: "Mom",
@@ -578,14 +681,14 @@ function sendGenericMessage(recipientId,message) {
             }, {
               type: "postback",
               title: "Send money",
-              payload: "payload_sendmoney2",
+              payload: "payload_sendmoney2"
             }]
           }]
         }
       }
     }
   };
-
+*/
   callSendAPI(messageData);
 }
 
