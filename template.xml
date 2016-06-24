@@ -2,9 +2,9 @@
     <flow>
       <folder label="Main">
           <output>
-              <prompt selectionType="RANDOM">
-                  <item>สวัสดีครับ, welcome to Mike's Pizza</item>
-              </prompt>
+              <!-- <prompt selectionType="RANDOM">
+                  <item>Hi, welcome to MBI Bank :)</item>
+              </prompt> -->
               <goto ref="getUserInput_2449614"/>
           </output>
           <getUserInput id="getUserInput_2449614">
@@ -38,12 +38,12 @@
                   </output>
               </input>
 
-
-
               <!-- Retrieve bank accout -->
               <input>
                   <grammar>
                       <item>My account</item>
+                      <item>บัญชีของฉัน</item>
+                      <item>How much do I have</item>
                   </grammar>
                   <output>
                       <prompt selectionType="RANDOM">
@@ -78,25 +78,34 @@
                         <getUserInput>
                             <input>
                                 <grammar>
-                                    <item>dad</item>
+                                    <item>sendmoney_dad</item>
                                 </grammar>
                                 <action varName="transferTo" operator="SET_TO">dad</action>
                                 <goto ref="output_how_much_money"/>
                             </input>
                             <input>
                                 <grammar>
-                                    <item>mom</item>
+                                    <item>requestmoney_dad</item>
+                                </grammar>
+                                <action varName="transferTo" operator="SET_TO">dad</action>
+                                <goto ref="output_requestmoney"/>
+                            </input>
+
+                            <input>
+                                <grammar>
+                                    <item>sendmoney_mom</item>
                                 </grammar>
                                 <action varName="transferTo" operator="SET_TO">mom</action>
                                 <goto ref="output_how_much_money"/>
                             </input>
                             <input>
                                 <grammar>
-                                    <item>sister</item>
+                                    <item>requestmoney_mom</item>
                                 </grammar>
-                                <action varName="transferTo" operator="SET_TO">sister</action>
-                                <goto ref="output_how_much_money"/>
+                                <action varName="transferTo" operator="SET_TO">mom</action>
+                                <goto ref="output_requestmoney"/>
                             </input>
+
                         </getUserInput>
                     </output>
                 </input>
@@ -117,21 +126,176 @@
                                 <output>
                                     <action varName="amount" operator="SET_TO_USER_INPUT"/>
                                     <prompt selectionType="RANDOM">
-                                    <item>button_Confirm transfer to {transferTo} amount {amount}?_yes_no</item>
+                                      <item>button_Confirm transfer to {transferTo} amount {amount}?_yes,yes|no,no</item>
                                     </prompt>
+                                    <getUserInput>
+                                      <input>
+                                          <grammar>
+                                              <item>yes</item>
+                                          </grammar>
+                                          <action varName="generic_pic" operator="SET_TO">http://www.marketvillagehuahin.co.th/images/shop/thumb/C3E97BB-97FBC49-05F5F0D.jpg</action>
+                                          <action varName="generic_title" operator="SET_TO">Transfered ${amount} to : {transferTo}</action>
+                                          <action varName="generic_sub_title" operator="SET_TO">Fee $0.00</action>
+                                          <goto ref="output_receipt"/>
+                                      </input>
+                                      <input>
+                                          <grammar>
+                                              <item>no</item>
+                                          </grammar>
+                                          <output>
+                                            <prompt>
+                                              <item>Cancle</item>
+                                            </prompt>
+                                          </output>
+                                      </input>
+                                  </getUserInput>
                                 </output>
                             </input>
                         </getUserInput>
                     </output>
                 </input>
 
+                <input>
+                  <grammar>
+                    <item>Request money to the most recent account</item>
+                  </grammar>
+                  <output id = "output_requestmoney">
+                    <prompt>
+                      <item>How much do you want to request from {transferTo}?</item>
+                    </prompt>
+                    <getUserInput>
+                            <input>
+                                <grammar>
+                                    <item>!.*</item>
+                                </grammar>
+                                <output>
+                                    <action varName="amount" operator="SET_TO_USER_INPUT"/>
+                                    <prompt selectionType="RANDOM">
+                                      <item>Requested ${amount} from {transferTo}.</item>
+                                    </prompt>
+                                </output>
+                            </input>
+                        </getUserInput>
+                  </output>
+                </input>
 
-  
 
+                <!-- paybill -->
+                <input>
+                  <grammar>
+                    <item>Pay bills</item>
+                  </grammar>
+                  <output>
+                        <prompt selectionType="RANDOM">
+                            <item>What do you want to pay : AIS, TRUE, Water, Electricity</item>
+                        </prompt>
+                        <getUserInput>
+                            <input>
+                                <grammar>
+                                    <item>TRUE</item>
+                                </grammar>
+                                <output>
+                                    <prompt selectionType="RANDOM">
+                                      <item>Your bill is: $555.50. Confirm transfer to TRUE?_yes_no</item>
+                                    </prompt>
+                                    <getUserInput>
+                                      <input>
+                                          <grammar>
+                                              <item>yes</item>
+                                          </grammar>
+                                          <action varName="generic_pic" operator="SET_TO">https://upload.wikimedia.org/wikipedia/en/thumb/c/cc/Logo-TRUE.svg/1280px-Logo-TRUE.svg.png</action>
+                                          <action varName="generic_title" operator="SET_TO">Payed for TRUE $555.50</action>
+                                          <action varName="generic_sub_title" operator="SET_TO">Fee $0.00</action>
+                                          <goto ref="output_receipt"/>
+                                      </input>
+                                      <input>
+                                          <grammar>
+                                              <item>no</item>
+                                          </grammar>
+                                          <output>
+                                            <prompt>
+                                              <item>Cancel</item>
+                                            </prompt>
+                                          </output>
+                                      </input>
+                                  </getUserInput>
+                                </output>
+                            </input>
+                            <input>
+                                <grammar>
+                                    <item>AIS</item>
+                                </grammar>
+                                <output>
+                                    <prompt selectionType="RANDOM">
+                                      <item>Your bill is: $555.50. Confirm transfer to AIS?_yes_no</item>
+                                    </prompt>
+                                    <getUserInput>
+                                      <input>
+                                          <grammar>
+                                              <item>yes</item>
+                                          </grammar>
+                                          <action varName="generic_pic" operator="SET_TO">http://www.ais.co.th/base_interface/images/ais_menu_logo.png</action>
+                                          <action varName="generic_title" operator="SET_TO">Payed for AIS $555.50</action>
+                                          <action varName="generic_sub_title" operator="SET_TO">Fee $0.00</action>
+                                          <goto ref="output_receipt"/>
+                                      </input>
+                                      <input>
+                                          <grammar>
+                                              <item>no</item>
+                                          </grammar>
+                                          <output>
+                                            <prompt>
+                                              <item>Cancel</item>
+                                            </prompt>
+                                          </output>
+                                      </input>
+                                  </getUserInput>
+                                </output>
+                            </input>
+                        </getUserInput>
+                    </output>
+                </input>
 
+                <!-- request money from friends -->
 
+                
 
+                <!-- print receipt -->
+                <input>
+                  <grammar>
+                    <item>Get recent receipt</item>
+                  </grammar>
+                  <output id = "output_receipt">
+                    <prompt>
+                      <!-- <item>receipt</item> -->
+                      <item>generic|receipt|{generic_pic}|{generic_title}|{generic_sub_title}</item>
+                    </prompt>
+                  </output>
+                </input>
 
+                <input>
+                  <grammar>
+                    <item>hi</item>
+                    <item>!.*\s(H|h)i\s.*</item>
+                    <item>!(H|h)i\s.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>Hi, welcome to MBI Bank :)</item>
+                    </prompt>
+                  </output>
+                </input>
+
+                <input>
+                  <grammar>
+                    <item>!.*(H|h)elp.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>You can use command: .. .. .. . . .</item>
+                    </prompt>
+                  </output>
+                </input>
               
           </folder>
 
@@ -144,6 +308,9 @@
       <var_folder name="Transfer">
            <var name="transferTo" type="TEXT" description=""/>
            <var name="amount" type="TEXT" description=""/>
+           <var name="generic_pic" type="TEXT" description=""/>
+           <var name="generic_title" type="TEXT" description=""/>
+           <var name="generic_sub_title" type="TEXT" description=""/>
       </var_folder>
     </variables>
 
