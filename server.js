@@ -596,6 +596,70 @@ function sendGenericMessage(recipientId,message) {
       }
     };
   }
+  else if(words[1]== "checkPetroPrice"){
+      url = 'http://www.pttplc.com/th/getoilprice.aspx/';
+    request(url, function(error, response, html){
+        if(!error){
+            var $ = cheerio.load(html);
+            var title, release, rating;
+            var json = { title : "", release : "", rating : ""};
+            $('#g_2963d969_94e5_4921_b8c3_9739b0799200_ctl00_uxGasoline95PriceDiv').filter(function(){
+                var data = $(this);
+                var gasoline95 = data['0']['children'][0]['data'];
+            });
+            $('#g_2963d969_94e5_4921_b8c3_9739b0799200_ctl00_uxGasohol91PriceDiv').filter(function(){
+                var data = $(this);
+                var gasohol91 = data['0']['children'][0]['data'];
+            });
+            $('#g_2963d969_94e5_4921_b8c3_9739b0799200_ctl00_uxGasohol95PriceDiv').filter(function(){
+                var data = $(this);
+                var gasohol95 = data['0']['children'][0]['data'];
+            });
+            $('#g_2963d969_94e5_4921_b8c3_9739b0799200_ctl00_uxGasoholE20PriceDiv').filter(function(){
+                var data = $(this);
+                var gasoholE20 = data['0']['children'][0]['data'];
+            });
+            $('#g_2963d969_94e5_4921_b8c3_9739b0799200_ctl00_uxGasoholE85PriceDiv').filter(function(){
+                var data = $(this);
+                var gasoholE85 = data['0']['children'][0]['data'];
+            });
+            $('#g_2963d969_94e5_4921_b8c3_9739b0799200_ctl00_uxDieselPriceDiv').filter(function(){
+                var data = $(this);
+                var diesel = data['0']['children'][0]['data'];
+            });
+            $('#g_2963d969_94e5_4921_b8c3_9739b0799200_ctl00_uxHyForcePremiumDieselDiv').filter(function(){
+                var data = $(this);
+                var premiumDiesel = data['0']['children'][0]['data'];
+            });
+
+        }
+        messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          attachment: {
+            type: "template",
+            payload: {
+              template_type: "generic",
+              elements: [{
+                title: "gasoline95",
+                subtitle: gasoline95,
+                item_url: "https://www.facebook.com/napon.meka?fref=ts",
+                image_url: "https://scontent.fbkk1-1.fna.fbcdn.net/v/t1.0-9/1521536_618191658217784_959036561_n.jpg?oh=893374610ec88dce0f472164439be16f&oe=57F0B2E6"
+              }, {
+                title: "gasohol91",
+                subtitle: gasohol91,
+                item_url: "https://www.facebook.com/ramkhana?fref=ts",
+                image_url: "https://scontent.fbkk1-1.fna.fbcdn.net/v/t1.0-9/310015_10201311245843439_351152783_n.jpg?oh=fe3a424d8a4be9bdce443829dc878187&oe=57C51027"
+              }]
+            }
+          }
+        }
+      };
+
+        });
+  }
   else
   {
     messageData = {
