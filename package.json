@@ -11,7 +11,8 @@
     "fs": "0.0.2",
     "https": "^1.0.0",
     "request": "^2.72.0",
-    "watson-developer-cloud": "^1.9.3"
+    "watson-developer-cloud": "^1.9.3",
+    "cheerio"    : "latest"
   },
   "author": "Tony Erwin",
   "license": "Apache License, Version 2.0"
