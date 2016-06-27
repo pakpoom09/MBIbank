@@ -279,8 +279,6 @@ function receivedAuthentication(event) {
  */
 
  var json_message;
- var cur_conversation_id;
- var cur_client_id;
 
 function receivedMessage(event) {
   var senderID = event.sender.id;
@@ -764,7 +762,64 @@ function sendReceiptMessage(recipientId,message) {
  * get the message id in a response
  *
  */
+
+ app.get('/sendMessage/:text', function(req, res) {
+
+     var _text = req.params.text;
+   for(var x in clients)
+   {
+     console.log(x);
+
+   var messageData = {
+     recipient: {
+       id: x
+     },
+     message: {
+       text: _text
+     }
+   };
+   callSendAPI(messageData);
+   res.send('Message Sent!');
+ }
+ });
+ //
+ // https://graph.facebook.com/v2.6/<USER_ID>?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=<PAGE_ACCESS_TOKEN>
+
+ app.get('/getUserProfile', function(req, res) {
+   var JSoutput;
+
+   for(var x in clients)
+   {
+     console.log(x);
+
+    var options = { method: 'GET',
+      url: 'https://graph.facebook.com/v2.6/'+x,
+      qs:
+       { fields: 'first_name,last_name,profile_pic,locale,timezone,gender',
+         access_token: 'EAABzc1Fq7j8BAGFeK4Qetw8kNSP41OKvY0PmguonIutkMiqI5zHMSvHD6NT3wvY7MZAfxpviUrtPK4yZCryk41IfsjNvQYfZB7BhQOhpd25MClx5tGDKZC9F5gt6R8ZA32VuTqTouIBOpOvAal3QuEK4LmHlZAD98aNMTogOClCQZDZD' },
+      headers:
+       { 'postman-token': '29494b19-7316-29fb-27a7-c0eaac5518f6',
+         'cache-control': 'no-cache',
+         'content-type': 'application/json' } };
+
+        request(options, function (error, response, body) {
+          if (error) throw new Error(error);
+
+          JSoutput = "USER_ID "+x+": "+JSON.stringify(body)+"\n";
+          res.send(JSoutput);
+
+        });
+   }
+  //  res.send(output);
+
+   res.send('Complete!');
+ });
+
+
 function callSendAPI(messageData) {
+
+
+
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
