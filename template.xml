@@ -40,7 +40,7 @@
 
               <!-- Retrieve bank accout -->
               <input>
-                  <grammar>                  
+                  <grammar>
                       <item>!.*(M|m)y.*(A|a)ccount.*</item>
                       <item>!.*บัญชีของฉัน.*</item>
                       <item>!.*How\smuch\smoney.*I\shave.*</item>
@@ -256,7 +256,7 @@
 
                 <!-- request money from friends -->
 
-                
+
 
                 <!-- print receipt -->
                 <input>
@@ -286,12 +286,26 @@
 
                 <input>
                   <grammar>
+                    <item>!.*(H|h)i.*</item>
+                    <item>!.*(T|t)hank.*</item>
+                    <item>!.*ขอบคุณ.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>Hi, welcome to MBI Bank :)</item>
+                    </prompt>
+                  </output>
+                </input>
+
+
+                <input>
+                  <grammar>
                     <item>!.*(H|h)elp.*</item>
                     <item>!.*(W|w)hat.*can.*do.*</item>
                   </grammar>
                   <output>
                     <prompt>
-                      <item>You ask MBI bank to: Check "My account", Transfer money to "Family" or "Friend", "Pay bills", etc</item>
+                      <item>You can ask MBI bank to: Check "My account", Transfer money to "Family" or "Friend", "Pay bills", etc</item>
                     </prompt>
                   </output>
                 </input>
@@ -305,7 +319,7 @@
                       <item></item>
                     </prompt>
                   </output>
-                </input> 
+                </input>
                 <input>
                   <grammar>
                     <item>!.*(E|e)xchange\srate.*</item>
@@ -341,7 +355,7 @@
                     </prompt>
                   </output>
                 </input>
-                
+
                 <input>
                   <grammar>
                     <item>!.*(get|Get|contact|Contact).*(human|employee|callcenter).*</item>
@@ -351,7 +365,7 @@
                       <item>button_How would you like to cotact our call center_messenger,messenger|call,call</item>
                     </prompt>
                   </output>
-                </input>          
+                </input>
           </folder>
 
 
