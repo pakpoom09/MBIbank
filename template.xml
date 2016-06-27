@@ -40,14 +40,14 @@
 
               <!-- Retrieve bank accout -->
               <input>
-                  <grammar>
-                      <item>My account</item>
-                      <item>บัญชีของฉัน</item>
-                      <item>How much do I have</item>
+                  <grammar>                  
+                      <item>!.*(M|m)y.*(A|a)ccount.*</item>
+                      <item>!.*บัญชีของฉัน.*</item>
+                      <item>!.*How\smuch\smoney.*I\shave.*</item>
                   </grammar>
                   <output>
                       <prompt selectionType="RANDOM">
-                          <item>generic</item>
+                          <item>button_Please select your account?_account1,account1|account2,account2|account3,account3</item>
                       </prompt>
                       <getUserInput>
                           <input>
@@ -56,7 +56,7 @@
                             </grammar>
                             <output>
                                 <prompt selectionType="RANDOM">
-                                  <item>receipt</item>
+                                  <item>generic|receipt|http://www.marketvillagehuahin.co.th/images/shop/thumb/C3E97BB-97FBC49-05F5F0D.jpg|Account xxx-xx-xx-xxx|Money in account $1,000,000.00</item>
                                 </prompt>
                             </output>
                           </input>
@@ -66,8 +66,7 @@
 
               <input>
                     <grammar>
-                        <item>Family</item>
-                        <item>family</item>
+                        <item>!.*(F|f)amily.*</item>
                         <item>ครอบครัว</item>
                         <item>ญาติ</item>
                     </grammar>
@@ -105,14 +104,13 @@
                                 <action varName="transferTo" operator="SET_TO">mom</action>
                                 <goto ref="output_requestmoney"/>
                             </input>
-
                         </getUserInput>
                     </output>
                 </input>
 
                 <input>
                   <grammar>
-                    <item>Transfer money to the most recent account</item>
+                    <item>!.*Transfer.*money.*recent\saccount.*</item>
                   </grammar>
                   <output id="output_how_much_money">
                         <prompt selectionType="RANDOM">
@@ -121,7 +119,7 @@
                         <getUserInput>
                             <input>
                                 <grammar>
-                                    <item>!.*</item>
+                                    <item>!\d*</item>
                                 </grammar>
                                 <output>
                                     <action varName="amount" operator="SET_TO_USER_INPUT"/>
@@ -157,7 +155,7 @@
 
                 <input>
                   <grammar>
-                    <item>Request money to the most recent account</item>
+                    <item>!.*Request.*money.*recent\saccount.*</item>
                   </grammar>
                   <output id = "output_requestmoney">
                     <prompt>
@@ -166,7 +164,7 @@
                     <getUserInput>
                             <input>
                                 <grammar>
-                                    <item>!.*</item>
+                                    <item>!\d*</item>
                                 </grammar>
                                 <output>
                                     <action varName="amount" operator="SET_TO_USER_INPUT"/>
@@ -183,7 +181,7 @@
                 <!-- paybill -->
                 <input>
                   <grammar>
-                    <item>Pay bills</item>
+                    <item>!.*(P|p)ay.*bills.*</item>
                   </grammar>
                   <output>
                         <prompt selectionType="RANDOM">
@@ -196,7 +194,7 @@
                                 </grammar>
                                 <output>
                                     <prompt selectionType="RANDOM">
-                                      <item>Your bill is: $555.50. Confirm transfer to TRUE?_yes_no</item>
+                                      <item>button_Your bill is $555.50. Please confirm payment to TRUE_yes,yes|no,no</item>
                                     </prompt>
                                     <getUserInput>
                                       <input>
@@ -227,7 +225,7 @@
                                 </grammar>
                                 <output>
                                     <prompt selectionType="RANDOM">
-                                      <item>Your bill is: $555.50. Confirm transfer to AIS?_yes_no</item>
+                                      <item>button_Your bill is $555.50. Please confirm payment to AIS_yes,yes|no,no</item>
                                     </prompt>
                                     <getUserInput>
                                       <input>
@@ -263,7 +261,7 @@
                 <!-- print receipt -->
                 <input>
                   <grammar>
-                    <item>Get recent receipt</item>
+                    <item>!.*(R|r)ecent.*receipt.*</item>
                   </grammar>
                   <output id = "output_receipt">
                     <prompt>
@@ -275,9 +273,9 @@
 
                 <input>
                   <grammar>
-                    <item>hi</item>
-                    <item>!.*\s(H|h)i\s.*</item>
-                    <item>!(H|h)i\s.*</item>
+                    <item>!.*(H|h)i.*</item>
+                    <item>!.*(H|h)ello.*</item>
+                    <item>!.*สวัสดี.*</item>
                   </grammar>
                   <output>
                     <prompt>
@@ -289,14 +287,71 @@
                 <input>
                   <grammar>
                     <item>!.*(H|h)elp.*</item>
+                    <item>!.*(W|w)hat.*can.*do.*</item>
                   </grammar>
                   <output>
                     <prompt>
-                      <item>You can use command: .. .. .. . . .</item>
+                      <item>You ask MBI bank to: Check "My account", Transfer money to "Family" or "Friend", "Pay bills", etc</item>
                     </prompt>
                   </output>
                 </input>
-              
+
+                <input>
+                  <grammar>
+                    <item>!.*(R|r)ecommend.*(F|f)und.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item></item>
+                    </prompt>
+                  </output>
+                </input> 
+                <input>
+                  <grammar>
+                    <item>!.*(E|e)xchange\srate.*</item>
+                    <item>!.*(C|c)urrency.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>Generic_checkExchangeRate</item>
+                    </prompt>
+                  </output>
+                </input>
+
+                <input>
+                  <grammar>
+                    <item>!.*check.*petro.*price</item>
+                    <item>!.*check.*oil.*price</item>
+                    <item>!.*ราคาน้ำมัน.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>generic_checkPetroPrice</item>
+                    </prompt>
+                  </output>
+                </input>
+
+                <input>
+                  <grammar>
+                    <item>!.*check.*gold.*price</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>generic_checkGoldPrice</item>
+                    </prompt>
+                  </output>
+                </input>
+                
+                <input>
+                  <grammar>
+                    <item>!.*(get|Get|contact|Contact).*(human|employee|callcenter).*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>button_How would you like to cotact our call center_messenger,messenger|call,call</item>
+                    </prompt>
+                  </output>
+                </input>          
           </folder>
 
 
