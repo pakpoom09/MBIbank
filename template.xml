@@ -303,7 +303,7 @@
                   </grammar>
                   <output>
                         <prompt selectionType="RANDOM">
-                            <item>Who do you want to meet with?</item>
+                            <item>generic|appoinment</item>
                         </prompt>
                         <getUserInput>
                           <input>
