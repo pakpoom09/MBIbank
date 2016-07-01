@@ -311,6 +311,7 @@
                               <item>!.*</item>
                             </grammar>
                             <output>
+                                  <action varName="appointment_who" operator="SET_TO_USER_INPUT"/>
                                   <prompt selectionType="RANDOM">
                                       <item>When the appointment will be?</item>
                                   </prompt>
@@ -320,6 +321,7 @@
                                         <item>!.*</item>
                                       </grammar>
                                       <output>
+                                            <action varName="appointment_when" operator="SET_TO_USER_INPUT"/>
                                             <prompt selectionType="RANDOM">
                                                 <item>Do you have any additional message?</item>
                                             </prompt>
@@ -330,7 +332,7 @@
                                                 </grammar>
                                                 <output>
                                                       <prompt selectionType="RANDOM">
-                                                          <item>Ok, I have schedule an appointment for you.</item>
+                                                          <item>Ok, I have schedule an appointment for you with {appointment_who} - {appointment_when}</item>
                                                       </prompt>
                                                 </output>
                                               </input>
@@ -488,12 +490,14 @@
               <folder label="Concepts" id="Concepts"></folder>
           </flow>
     <variables>
-      <var_folder name="Transfer">
+      <var_folder name="Var">
            <var name="transferTo" type="TEXT" description=""/>
            <var name="amount" type="TEXT" description=""/>
            <var name="generic_pic" type="TEXT" description=""/>
            <var name="generic_title" type="TEXT" description=""/>
            <var name="generic_sub_title" type="TEXT" description=""/>
+           <var name="appointment_who" type="TEXT" description=""/>
+           <var name="appointment_when" type="TEXT" description=""/>
       </var_folder>
     </variables>
 
