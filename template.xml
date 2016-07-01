@@ -2,9 +2,9 @@
     <flow>
       <folder label="Main">
           <output>
-              <!-- <prompt selectionType="RANDOM">
-                  <item>Hi, welcome to MBI Bank :)</item>
-              </prompt> -->
+              <prompt selectionType="RANDOM">
+                  <item>Hello, welcome to MBI Bank :), you can type "help" for more usage info</item>
+              </prompt>
               <goto ref="getUserInput_2449614"/>
           </output>
           <getUserInput id="getUserInput_2449614">
@@ -67,6 +67,7 @@
               <input>
                     <grammar>
                         <item>!.*(F|f)amily.*</item>
+                        <item>!.*(F|f)riend.*</item>
                         <item>ครอบครัว</item>
                         <item>ญาติ</item>
                     </grammar>
@@ -77,6 +78,7 @@
                         <getUserInput>
                             <input>
                                 <grammar>
+                                   <item>!.*send.*money.*dad.*</item>
                                     <item>sendmoney_dad</item>
                                 </grammar>
                                 <action varName="transferTo" operator="SET_TO">dad</action>
@@ -84,6 +86,7 @@
                             </input>
                             <input>
                                 <grammar>
+                                  <item>!.*request.*money.*dad.*</item>
                                     <item>requestmoney_dad</item>
                                 </grammar>
                                 <action varName="transferTo" operator="SET_TO">dad</action>
@@ -92,14 +95,14 @@
 
                             <input>
                                 <grammar>
-                                    <item>sendmoney_mom</item>
+                                    <item>!.*send.*money.*mom.*</item>
                                 </grammar>
                                 <action varName="transferTo" operator="SET_TO">mom</action>
                                 <goto ref="output_how_much_money"/>
                             </input>
                             <input>
                                 <grammar>
-                                    <item>requestmoney_mom</item>
+                                    <item>!.*request.*money.*mom.*</item>
                                 </grammar>
                                 <action varName="transferTo" operator="SET_TO">mom</action>
                                 <goto ref="output_requestmoney"/>
@@ -142,7 +145,7 @@
                                           </grammar>
                                           <output>
                                             <prompt>
-                                              <item>Cancle</item>
+                                              <item>Cancel</item>
                                             </prompt>
                                           </output>
                                       </input>
@@ -176,6 +179,7 @@
                         </getUserInput>
                   </output>
                 </input>
+
 
 
                 <!-- paybill -->
@@ -221,7 +225,7 @@
                             </input>
                             <input>
                                 <grammar>
-                                    <item>AIS</item>
+                                    <item>.*AIS.*</item>
                                 </grammar>
                                 <output>
                                     <prompt selectionType="RANDOM">
@@ -250,12 +254,95 @@
                                   </getUserInput>
                                 </output>
                             </input>
+                            <input>
+                                <grammar>
+                                    <item>water</item>
+                                    <item>electricity</item>
+                                </grammar>
+                                <output>
+                                    <prompt selectionType="RANDOM">
+                                      <item>Currently, you have no bill to pay</item>
+                                    </prompt>
+                                </output>
+                            </input>
                         </getUserInput>
                     </output>
                 </input>
 
-                <!-- request money from friends -->
+                <!--Stock portfolio -->
+                <input>
+                  <grammar>
+                    <item>!.*(S|s)tock.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>Your stock profile consist of: </item>
+                    </prompt>
+                    <getUserInput>
+                    <input>
+                      <grammar>
+                        <item>!.*(S|s)uggest.*</item>
+                      </grammar>
+                      <output>
+                        <prompt>
+                          <item>generic|stock_PTT</item>
+                        </prompt>
+                      </output>
+                    </input>
+                  </getUserInput>
+                  </output>
+                </input>
 
+                <input>
+                  <grammar>
+                    <item>!.*meet.*</item>
+                    <item>!.*appoint.*with.*</item>
+                    <item>!.*meet.*with.*</item>
+                    <item>!(A|a)ppointment</item>
+                    <item>!.*(A|a)ppointment.*</item>
+                  </grammar>
+                  <output>
+                        <prompt selectionType="RANDOM">
+                            <item>Who do you want to meet with?</item>
+                        </prompt>
+                        <getUserInput>
+                          <input>
+                            <grammar>
+                              <item>!.*</item>
+                            </grammar>
+                            <output>
+                                  <prompt selectionType="RANDOM">
+                                      <item>When the appointment will be?</item>
+                                  </prompt>
+                                  <getUserInput>
+                                    <input>
+                                      <grammar>
+                                        <item>!.*</item>
+                                      </grammar>
+                                      <output>
+                                            <prompt selectionType="RANDOM">
+                                                <item>Do you have any additional message?</item>
+                                            </prompt>
+                                            <getUserInput>
+                                              <input>
+                                                <grammar>
+                                                  <item>!.*</item>
+                                                </grammar>
+                                                <output>
+                                                      <prompt selectionType="RANDOM">
+                                                          <item>Ok, I have schedule an appointment for you.</item>
+                                                      </prompt>
+                                                </output>
+                                              </input>
+                                            </getUserInput>
+                                      </output>
+                                    </input>
+                                  </getUserInput>
+                            </output>
+                          </input>
+                        </getUserInput>
+                  </output>
+                </input>
 
 
                 <!-- print receipt -->
@@ -270,33 +357,49 @@
                     </prompt>
                   </output>
                 </input>
-
+                  <!-- อื่นๆ -->
                 <input>
                   <grammar>
-                    <item>!.*(H|h)i.*</item>
+                    <item>!.*\s(H|h)i\s.*</item>
                     <item>!.*(H|h)ello.*</item>
+                    <item>!.*(H|h)ey.*</item>
                     <item>!.*สวัสดี.*</item>
                   </grammar>
                   <output>
-                    <prompt>
+                    <prompt selectionType="RANDOM">
                       <item>Hi, welcome to MBI Bank :)</item>
+                      <item>Hello, you can type "help" for more info.</item>
                     </prompt>
                   </output>
                 </input>
 
                 <input>
                   <grammar>
-                    <item>!.*(H|h)i.*</item>
                     <item>!.*(T|t)hank.*</item>
                     <item>!.*ขอบคุณ.*</item>
                   </grammar>
                   <output>
                     <prompt>
-                      <item>Hi, welcome to MBI Bank :)</item>
+                      <item>You're welcome! :)</item>
+                      <item></item>
                     </prompt>
                   </output>
                 </input>
 
+                <input>
+                  <grammar>
+                    <item>!.*love.*</item>
+                    <item>!.*great.*</item>
+                    <item>!.*excellent.*</item>
+                    <item>!.*nice.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>Thanks! :)</item>
+                      <item></item>
+                    </prompt>
+                  </output>
+                </input>
 
                 <input>
                   <grammar>
@@ -305,7 +408,18 @@
                   </grammar>
                   <output>
                     <prompt>
-                      <item>You can ask MBI bank to: Check "My account", Transfer money to "Family" or "Friend", "Pay bills", etc</item>
+                      <item>You can ask MBI bank about: "services", "appointment", "set alert message" and "stocks"</item>
+                    </prompt>
+                  </output>
+                </input>
+
+                <input>
+                  <grammar>
+                    <item>!.*\s(H|h)elp_all.*</item>
+                  </grammar>
+                  <output>
+                    <prompt>
+                      <item>You can ask MBI bank about: "services", "appointment", "stocks", Check "My account", Transfer money to "Family" or "Friend", "Pay bills", etc</item>
                     </prompt>
                   </output>
                 </input>
@@ -340,7 +454,7 @@
                   </grammar>
                   <output>
                     <prompt>
-                      <item>generic_checkPetroPrice</item>
+                      <item>generic|checkpetroprice</item>
                     </prompt>
                   </output>
                 </input>

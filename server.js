@@ -279,12 +279,14 @@ function receivedAuthentication(event) {
  */
 
  var json_message;
+ var bool_intCheck = false;
 
 function receivedMessage(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
+
 
   console.log("Received message for user %d and page %d at %d with message:",
     senderID, recipientID, timeOfMessage);
@@ -294,7 +296,28 @@ function receivedMessage(event) {
 
   // You may get a text or attachment but not both
   var messageText = message.text;
-  var messageAttachments = message.attachments;
+  var messageAttachments = message.attachment;
+
+  console.log("Attachhhhhhhhhhhh"+messageAttachments);
+
+  messageText = messageText;
+
+  if(bool_intCheck)
+  {
+     if(!isNaN(parseFloat(messageText)) && isFinite(messageText) && (parseFloat(messageText) > 0.0))
+     {
+       bool_intCheck = false;
+     }
+     else
+     {
+        sendTextMessage(senderID,"Please input a valid number");
+     return 0;
+     }
+  }
+
+
+
+
 //Watson dialog
 //client_id: '', conversation_id: '', classifier: ''
 var params = {
@@ -303,7 +326,7 @@ var params = {
     client_id: clients[senderID].client_id,
     input:     messageText
   };
-
+if (messageText) {
 
 dialog_service.conversation(params, function(err, conversation) {
   if (err)
@@ -322,7 +345,13 @@ dialog_service.conversation(params, function(err, conversation) {
 
     console.log("RESPONSE:"+json_message.response[0]);
 
-    if (messageText) {
+    if(json_message.response[0].indexOf("How much") > -1)
+    {
+      bool_intCheck = true;
+      console.log("INPUT INTEGERRRRRRRRRRRRR!!");
+    }
+
+
 
       // If we receive a text message, check to see if it matches any special
       // keywords and send back the corresponding example. Otherwise, just echo
@@ -341,16 +370,33 @@ dialog_service.conversation(params, function(err, conversation) {
           sendReceiptMessage(senderID,json_message.response[0]);
 
         else if (messageText == 'ภาคภูมิ')
-          sendTextMessage(senderID,"เป็นคนที่ใจหล่อมากครับ นับถือๆ เรียนอยู่มหิดลปี3 สนใจ inboxมาครับ");
+        sendTextMessage(senderID,"เป็นคนที่ใจหล่อมากครับ นับถือๆ เรียนอยู่มหิดลปี3 สนใจ inboxมาครับ");
+
+        else if (messageText.indexOf('stock') > -1)
+        {
+            //sendTextMessage(senderID,"Your stock profile consist of:");
+            sendTextMessage(senderID,json_message.response[0]);
+            sendGenericMessage(senderID,"generic|stock");
+            // sendGenericMessage(senderID,"generic|stock|BTS|ABC co.,Ltd|9.10|-0.05(-0.55%)|2130|https://scontent.fbkk2-1.fna.fbcdn.net/v/t35.0-12/13555571_10210095055913201_587333576_o.jpg?oh=79ede7c6c0edcc0df2bd1791daf1f0d4&oe=577626E0");
+            // sendGenericMessage(senderID,"generic|stock|CPF|CBA co.,Ltd|28.25|-0.5(-1.74%)|2000|https://scontent.fbkk2-1.fna.fbcdn.net/v/t35.0-12/13548820_10210095055753197_1505649912_o.jpg?oh=329763116161dcffbf759c129c349364&oe=577620D5");
+            // sendGenericMessage(senderID,"generic|stock|AOT|Tomato co.,Ltd|389.00|+3(+0.78%)|150|https://scontent.fbkk2-1.fna.fbcdn.net/v/t35.0-12/13570331_10210095055833199_707701137_o.png?oh=1d0e49eb3eca36d8281fe1dc15c27f50&oe=577642F4");
+            // sendGenericMessage(senderID,"generic|stock|BEM|MEB co.,Ltd|6.70|+0.35(+5.51%)|1220|https://scontent.fbkk2-1.fna.fbcdn.net/v/t35.0-12/13570227_10210095055953202_177087_o.jpg?oh=67098e1d0888c5545a8dd0acd24cd358&oe=5775EE27");
+            // sendGenericMessage(senderID,"generic|stock|PTT|TTP co.,Ltd|320.00|+1(+0.31%)|180|");
+// sendGenericMessage(senderID,"generic|stock|BTS|ABC co.,Ltd|9.10|-0.05(-0.55%)|2130|http://gdriv.es/mbibank/9_10.jpg"
+//                 +  "|CPF|CBA co.,Ltd|28.25|-0.5(-1.74%)|2000|http://gdriv.es/mbibank/28_25.jpg"
+//                 +  "|AOT|Tomato co.,Ltd|389.00|+3(+0.78%)|150|http://gdriv.es/mbibank/389.png"
+//                 +  "|BEM|MEB co.,Ltd|6.70|+0.35(+5.51%)|1220|http://gdriv.es/mbibank/6_70.jpg"
+//                 +  "|PTT|TTP co.,Ltd|320.00|+1(+0.31%)|180|http://gdriv.es/mbibank/320.png");
+
+        }
         else
           sendTextMessage(senderID,json_message.response[0]);
 
-    }else if (messageAttachments) {
-      sendTextMessage(senderID, "Message with attachment received");
-    }
-  }
+}
 });
-
+}else if(messageAttachments) {
+  sendTextMessage(senderID, "Message with attachment received");
+}
 //
 
 }
@@ -430,7 +476,13 @@ function receivedPostback(event) {
       }
 
       console.log("Post_RESPONSE:"+json_message.response[0]);
+      console.log("RESPONSE:"+json_message.response[0]);
 
+      if(json_message.response[0].indexOf("How much") > -1)
+      {
+        bool_intCheck = true;
+        console.log("INPUT INTEGERRRRRRRRRRRRR!!");
+      }
 
   if(json_message.response[0].substring(0,5) == 'image')
     sendImageMessage(senderID,json_message.response[0]);
@@ -595,9 +647,74 @@ function sendGenericMessage(recipientId,message) {
         }
       }
     };
+  }else if(words[1] == "stock"){
+    console.log(message);
+    messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          attachment: {
+            type: "template",
+            payload: {
+              template_type: "generic",
+              elements: [
+               {
+                  "title":"BTS",
+                  "subtitle":"Company: ABC co.,Ltd\nPrice: 9.10\nChange: -0.05(-0.55%)\nAmount: 2130",
+                  "image_url":"https://4efc536e79c499dec484069e649cf13144a407f3.googledrive.com/host/0BzxuTooYYPajTkRqTmMwWlVCY0k/9_10.jpg"
+               },
+               {
+                  "title":"CPF",
+                  "subtitle":"Company: CBA co.,Ltd\nPrice: 28.25\nChange: -0.5(-1.74%)\nAmount: 2000",
+                  "image_url":"https://4efc536e79c499dec484069e649cf13144a407f3.googledrive.com/host/0BzxuTooYYPajTkRqTmMwWlVCY0k/28_25.jpg"
+               },
+               {
+                  "title":"AOT",
+                  "subtitle":"Company: Tomato co.,Ltd\nPrice: 389.00\nChange: +3(+0.78%)\nAmount: 150",
+                  "image_url":"https://4efc536e79c499dec484069e649cf13144a407f3.googledrive.com/host/0BzxuTooYYPajTkRqTmMwWlVCY0k/389.png"
+               },
+               {
+                  "title":"BEM",
+                  "subtitle":"Company: MEB co.,Ltd\nPrice: 6.70\nChange: +0.35(+5.51%)\nAmount: 1220",
+                  "image_url":"https://4efc536e79c499dec484069e649cf13144a407f3.googledrive.com/host/0BzxuTooYYPajTkRqTmMwWlVCY0k/6_70.jpg"
+               },
+               {
+                  "title":"PTT",
+                  "subtitle":"Company: TTP co.,Ltd\nPrice: 320.00\nChange: +1(+0.31%)\nAmount: 180",
+                  "image_url":"https://4efc536e79c499dec484069e649cf13144a407f3.googledrive.com/host/0BzxuTooYYPajTkRqTmMwWlVCY0k/320.png"
+               }
+            ]
+            }
+          }
+        }
+      };
+  }else if(words[1] == "stock_PTT"){
+    sendTextMessage(recipientId,"From your portfolio, we recommend that you should invest more on the PTT due to its uptrend");
+    messageData = {
+        recipient: {
+          id: recipientId
+        },
+        message: {
+          attachment: {
+            type: "template",
+            payload: {
+              template_type: "generic",
+              elements: [
+               {
+                  "title":"PTT",
+                  "subtitle":"Company: TTP co.,Ltd\nPrice: 320.00\nChange: +1(+0.31%)\nAmount: 180",
+                  "image_url":"https://4efc536e79c499dec484069e649cf13144a407f3.googledrive.com/host/0BzxuTooYYPajTkRqTmMwWlVCY0k/320.png"
+               }
+            ]
+            }
+          }
+        }
+      };
   }
-  else if(words[1]== "checkPetroPrice"){
-      url = 'http://www.pttplc.com/th/getoilprice.aspx/';
+  else if(words[1] == "checkpetroprice"){
+    console.log("retro_price");
+    var url = 'http://www.pttplc.com/th/getoilprice.aspx/';
     request(url, function(error, response, html){
         if(!error){
             var $ = cheerio.load(html);
@@ -876,8 +993,7 @@ function sendReceiptMessage(recipientId,message) {
    }
   //  res.send(output);
 
-   res.send('Complete!');
- });
+});
 
 
 function callSendAPI(messageData) {
@@ -897,6 +1013,7 @@ function callSendAPI(messageData) {
 
       console.log("Successfully sent generic message with id %s to recipient %s",
         messageId, recipientId);
+        //here
     } else {
       console.error("Unable to send message.");
       console.error(response);

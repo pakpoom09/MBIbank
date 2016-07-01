@@ -11,6 +11,15 @@ app.get('/peekDialogs', function(req, res) {
   });*/
 
 });
+var text = "How much do u want?"
+if(text.indexOf("How much") > -1)
+{
+  console.log("INPUT INTEGERRRRRRRRRRRRR!!");
+}
+else{
+  console.log("NOT INTEGERRRRRRRRRRRRR!!");
+}
+
 
 var port = process.env.PORT || 7777;
 app.listen(port, function() {
